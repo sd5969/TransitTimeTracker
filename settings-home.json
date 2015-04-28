@@ -1,0 +1,19 @@
+{
+	"location" : "champaign,il",
+	"stops" : [{
+		"id" : "wht6th",
+		"name" : "White and Sixth"
+	},
+		{
+		"id" : "uni6th",
+		"name" : "University and Sixth"
+	},
+		{
+		"id" : "iu",
+		"name" : "Illini Union"
+	},
+		{
+		"id" : "plaza",
+		"name" : "Transit Plaza"
+	}]
+}

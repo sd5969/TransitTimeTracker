@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Transit Time Tracker!</title>
+<script src="jquery-2.0.3.min.js"></script>
+<script>
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+var loc = "home";
+if(getUrlVars()["l"]) loc = getUrlVars()["l"];
+var compass = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+
+$(function() {
+
+	var lines = new Array();
+	var numcols = 0;
+	var settings;
+	var weather;
+	var stop;
+	
+	$.getJSON("settings-" + loc + ".json", function(data){
+		settings = data;
+		numcols = data.stops.length + 1;
+		var contents = '<table style="height: 100%; width: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">\n' + 
+			'<tr>\n' + 
+			'<td class="b" id="t1" style="width: ' + Math.round(100/numcols) + '%;">\n' + 
+			'</td>\n';
+		for(var i = 0; i < data.stops.length; i++) {
+			contents += '<td class="' + ((i % 2 == 0) ? 'a' : 'b') + '" id="t' + (i+2) + '" style="width: ' + Math.round(100/numcols) + '%;">\n' + 
+			'</td>\n';
+		}
+		contents += '</tr>\n' + 
+			'</table>\n';
+		$("#fillMe").html(contents);
+		UpdateWeather();
+		UpdateStops();
+		
+	});
+	
+	$.ajaxSetup({timeout:10000});
+	
+	function DisplayTime(){
+		if (!document.all && !document.getElementById)
+			return;
+		var CurrentDate=new Date();
+		var hours=CurrentDate.getHours();
+		var minutes=CurrentDate.getMinutes();
+		var seconds=CurrentDate.getSeconds();
+		var DayNight="PM";
+		if (hours<12) DayNight="AM";
+		if (hours>12) hours=hours-12;
+		if (hours==0) hours=12;
+		if (minutes<=9) minutes="0"+minutes;
+		if (seconds<=9) seconds="0"+seconds;
+		var currentTime=hours+":"+minutes+":"+seconds+" "+DayNight;
+		$('#curTime').html("" + currentTime);
+		setTimeout(DisplayTime,1000);
+	}
+	
+	function UpdateStops() {
+		for(var i = 0; i < settings.stops.length; i++) {
+			!function outer(i) {
+				var theURL = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20json%20where%20url%3D%22http%3A%2F%2Fwww.cumtd.com%2Fmaps-and-schedules%2Fbus-stops%2Frealtimejson%3Fpt%3D30%26id%3D' + settings.stops[i].id + '%26callback%3Dderp%22&format=json';
+				//alert(theURL);
+				$.getJSON(theURL, function(data) {
+					stop = data.query.results.json;
+					var contents = '<div class="h2wrapper"><h2>' + settings.stops[i].name + '</h2></div>' + 
+						'<table style="width: 100%; margin: 5px; padding: 5px; margin-left: 0px;">';
+					if(stop != null) for(var n = 0; n < stop.Departures.length; n++) {
+						var bordercolor;
+						if(stop.Departures[n].Headsign === 'ILLINI') bordercolor = 'PURPLE';
+						else if(stop.Departures[n].Headsign.indexOf("AIR BUS") > -1) bordercolor = 'CYAN';
+						else if(stop.Departures[n].Headsign.indexOf("BRONZE") > -1) bordercolor = 'ORANGE';
+						else if(stop.Departures[n].Headsign.indexOf("HOPPER") > -1) bordercolor = stop.Departures[n].Headsign.substring(0,stop.Departures[n].Headsign.indexOf("HOPPER"));
+						else if(stop.Departures[n].Headsign.indexOf(" ") > -1) bordercolor = stop.Departures[n].Headsign.substring(0,stop.Departures[n].Headsign.indexOf(" "));
+						else bordercolor = stop.Departures[n].Headsign;
+						contents += '<tr><td style="vertical-align: center; border: 5px solid ' + bordercolor + ';">' +
+							'<img src="bus.png" style="float: left; padding: 5px;" />' + 
+							'<h2 style="margin-bottom: -16px; padding: 5px; font-size: 30px;">' +stop.Departures[n].Route + 
+							'<span style="float: right; font-size: 35px;">' +stop.Departures[n].RealTime + '</span></h2>' +
+							'<span style="font-size: 12px;">' + stop.Departures[n].Headsign + '</span>' +
+							'</td></tr>';
+					}
+					contents += '</table>';
+					$('#t' + (i + 2)).html(contents);
+				});
+			}(i);
+		}
+	}
+	
+	function UpdateWeather() {
+		$.getJSON('http://api.openweathermap.org/data/2.5/weather?q=' + settings.location, function(data) {
+			weather = data;
+			var compdir = compass[Math.round(data.wind.deg/22.5)];
+			var contents = '<div class="h2wrapper"><h2>' + weather.name + ', ' + weather.sys.country + '</h2></div>' +
+				'<img src="http://openweathermap.org/img/w/' + weather.weather[0].icon + '.png" style="padding: 10px; padding-top: 0px; position: relative; float: left;" />' +
+				'<h2 style="font-size: 60px;">' + Math.round(32 + 1.8*(weather.main.temp - 273),1) + '&deg;F</h2>' +
+				'<p>' + weather.weather[0].main + ' - ' + weather.weather[0].description + '</p><br />' +
+				'<h2><span style="color: #b00; font-size: 40px;">'+ Math.round(32 + 1.8*(weather.main.temp_max - 273),1) + '&deg;F</span> / ' +
+				'<span style="color: #00b; font-size: 40px;">' + Math.round(32 + 1.8*(weather.main.temp_min - 273),1) + '&deg;F</span></h2><br />' +
+				'<p>' + Math.round(2.23694*weather.wind.speed,2) + ' mph ' + compdir + '</p>' +
+				'<p>' + weather.main.humidity + '% Humidity</p>' +
+				'<br /><br />' +
+				'<div id="curTime" style="font-size: 40px; font-weight: bold; text-align: center;">' + 
+				'</div>';
+			$('#t1').html(contents);
+			DisplayTime();
+		});
+	}
+	
+	setInterval(UpdateWeather, 10*60000);
+	setInterval(UpdateStops, 30000);
+});
+</script>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
+</head>
+<body>
+<div id="fillMe">
+</div>
+</body>
+</html>

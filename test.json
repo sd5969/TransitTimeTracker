@@ -1,0 +1,2 @@
+{ "banana" : ["no", "yes"],
+  "_comment" : "YQL API parses empty fields as null, remember this" }

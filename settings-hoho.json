@@ -1,0 +1,15 @@
+{
+	"location" : "urbana,il",
+	"stops" : [{
+		"id" : "gwnnv",
+		"name" : "Goodwin and Nevada"
+	},
+		{
+		"id" : "chemls",
+		"name" : "Chemical and Life Sciences"
+	},
+		{
+		"id" : "krannert",
+		"name" : "Krannert"
+	}]
+}
