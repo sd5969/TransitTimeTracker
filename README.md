@@ -1,4 +1,4 @@
 # TransitTimeTracker
-CUMTD bus stop display tracker, Champaign-Urbana, IL.
+CUMTD (Champaign-Urbana Mass Transit District) bus stop display tracker, Champaign-Urbana, IL.
 
 -Sanjit
