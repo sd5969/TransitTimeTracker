@@ -4,10 +4,14 @@
         border: 0px;
 }
 
+html, body, #fillMe, .col, .b, .a {
+	height: 100%;
+}
+
 body {
 	background-color: #000;
 	font-family: Arial, Sans-serif;
-	color: #eee;
+	color: #333;
 }
 
 td {
@@ -17,15 +21,14 @@ td {
 }
 
 td.a {
-	background-color: #047;	
+	background-color: #ededed;	
 }
 
 td.b {
-	background-color: #024;
+	background-color: #fff;
 }
 
 .h2wrapper {
-	background-color: #000;
 	padding: 5px;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
@@ -34,5 +37,55 @@ td.b {
 
 h2 {
 	font-size: 25px;
-	color: #eee;
+	color: #333;
+}
+
+.h2wrapper h2 {
+	border-bottom: 1px solid black;
+}
+
+h2.bus {
+	margin-bottom: -12px;
+	padding: 5px;
+	font-size: 30px;
+}
+
+table.col {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+td.bus {
+	vertical-align: middle;
+}
+
+table.bus {
+	width: 100%;
+	margin: 5px;
+	padding: 5px;
+	margin-left: 0px;
+}
+
+.high {
+	font-size: 40px;
+	color: #2a080b;
+}
+
+.low {
+	font-size: 40px;
+	color: #07121c;
+}
+
+.colorbar {
+	width: 15px;
+	min-height: 70px;
+	height: 100%;
+	float: left;
+	padding: 0px;
+	overflow: auto;
 }

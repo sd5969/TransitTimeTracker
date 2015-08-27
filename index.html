@@ -16,7 +16,7 @@ function getUrlVars() {
 
 var loc = "home";
 if(getUrlVars()["l"]) loc = getUrlVars()["l"];
-var compass = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+var compass = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW", "N"];
 
 $(function() {
 
@@ -29,7 +29,7 @@ $(function() {
 	$.getJSON("settings-" + loc + ".json", function(data){
 		settings = data;
 		numcols = data.stops.length + 1;
-		var contents = '<table style="height: 100%; width: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">\n' + 
+		var contents = '<table class="col">\n' + 
 			'<tr>\n' + 
 			'<td class="b" id="t1" style="width: ' + Math.round(100/numcols) + '%;">\n' + 
 			'</td>\n';
@@ -73,18 +73,19 @@ $(function() {
 				$.getJSON(theURL, function(data) {
 					stop = data.query.results.json;
 					var contents = '<div class="h2wrapper"><h2>' + settings.stops[i].name + '</h2></div>' + 
-						'<table style="width: 100%; margin: 5px; padding: 5px; margin-left: 0px;">';
+						'<table class="bus">';
 					if(stop != null) for(var n = 0; n < stop.Departures.length; n++) {
 						var bordercolor;
-						if(stop.Departures[n].Headsign === 'ILLINI') bordercolor = 'PURPLE';
-						else if(stop.Departures[n].Headsign.indexOf("AIR BUS") > -1) bordercolor = 'CYAN';
-						else if(stop.Departures[n].Headsign.indexOf("BRONZE") > -1) bordercolor = 'ORANGE';
-						else if(stop.Departures[n].Headsign.indexOf("HOPPER") > -1) bordercolor = stop.Departures[n].Headsign.substring(0,stop.Departures[n].Headsign.indexOf("HOPPER"));
+						if(stop.Departures[n].Headsign.toUpperCase() === 'ILLINI') bordercolor = 'PURPLE';
+						else if(stop.Departures[n].Headsign.toUpperCase().indexOf("AIR BUS") > -1) bordercolor = 'CYAN';
+						else if(stop.Departures[n].Headsign.toUpperCase().indexOf("BRONZE") > -1) bordercolor = 'ORANGE';
+						else if(stop.Departures[n].Headsign.toUpperCase().indexOf("HOPPER") > -1) bordercolor = stop.Departures[n].Headsign.substring(0,stop.Departures[n].Headsign.toUpperCase().indexOf("HOPPER"));
 						else if(stop.Departures[n].Headsign.indexOf(" ") > -1) bordercolor = stop.Departures[n].Headsign.substring(0,stop.Departures[n].Headsign.indexOf(" "));
 						else bordercolor = stop.Departures[n].Headsign;
-						contents += '<tr><td style="vertical-align: center; border: 5px solid ' + bordercolor + ';">' +
+						// alert(bordercolor);
+						contents += '<tr><td class="colorbar" style="background-color:' + bordercolor + ';"></td><td class="bus">' +
 							'<img src="bus.png" style="float: left; padding: 5px;" />' + 
-							'<h2 style="margin-bottom: -16px; padding: 5px; font-size: 30px;">' +stop.Departures[n].Route + 
+							'<h2 class="bus">' +stop.Departures[n].Route + 
 							'<span style="float: right; font-size: 35px;">' +stop.Departures[n].RealTime + '</span></h2>' +
 							'<span style="font-size: 12px;">' + stop.Departures[n].Headsign + '</span>' +
 							'</td></tr>';
@@ -104,8 +105,8 @@ $(function() {
 				'<img src="http://openweathermap.org/img/w/' + weather.weather[0].icon + '.png" style="padding: 10px; padding-top: 0px; position: relative; float: left;" />' +
 				'<h2 style="font-size: 60px;">' + Math.round(32 + 1.8*(weather.main.temp - 273),1) + '&deg;F</h2>' +
 				'<p>' + weather.weather[0].main + ' - ' + weather.weather[0].description + '</p><br />' +
-				'<h2><span style="color: #b00; font-size: 40px;">'+ Math.round(32 + 1.8*(weather.main.temp_max - 273),1) + '&deg;F</span> / ' +
-				'<span style="color: #00b; font-size: 40px;">' + Math.round(32 + 1.8*(weather.main.temp_min - 273),1) + '&deg;F</span></h2><br />' +
+				'<h2><span class="high">'+ Math.round(32 + 1.8*(weather.main.temp_max - 273),1) + '&deg;F</span> / ' +
+				'<span class="low">' + Math.round(32 + 1.8*(weather.main.temp_min - 273),1) + '&deg;F</span></h2><br />' +
 				'<p>' + Math.round(2.23694*weather.wind.speed,2) + ' mph ' + compdir + '</p>' +
 				'<p>' + weather.main.humidity + '% Humidity</p>' +
 				'<br /><br />' +
