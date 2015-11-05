@@ -98,7 +98,7 @@ $(function() {
 	}
 	
 	function UpdateWeather() {
-		$.getJSON('http://api.openweathermap.org/data/2.5/weather?q=' + settings.location, function(data) {
+		$.getJSON('http://api.openweathermap.org/data/2.5/weather?APPID=bc256a03e2e86ecefc4b782f5b0e532d&q=' + settings.location, function(data) {
 			weather = data;
 			var compdir = compass[Math.round(data.wind.deg/22.5)];
 			var contents = '<div class="h2wrapper"><h2>' + weather.name + ', ' + weather.sys.country + '</h2></div>' +
